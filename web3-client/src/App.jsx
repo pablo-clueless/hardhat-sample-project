@@ -3,7 +3,7 @@ import { ethers, utils } from 'ethers'
 import { ThemeProvider } from '@mui/material'
 
 import abi from './contracts/Bank.json'
-import { InputField, Navbar, Toast } from './components'
+import { InputField, Navbar, Text, Toast } from './components'
 import { theme } from './theme'
 
 const App = () => {
@@ -26,13 +26,10 @@ const App = () => {
         const account = accounts[0]
         setIsWalletConnected(true)
         setCustomerAddress(account)
-        console.log('Account connected: ', account)
       } else {
         setError('Please install a MetaMask wallet to use our bank.')
-        console.log('No MetaMask detected!')
       }
     } catch (error) {
-      console.log(error)
     }
   }
 
@@ -47,11 +44,9 @@ const App = () => {
         bankName = utils.parseBytes32String(bankName)
         setCurrentBankName(bankName.toString())
       } else {
-        console.log('Ethereum object not found, install Metamask.')
         setError('Please install a MetaMask wallet to use our bank')
       }
     } catch (error) {
-      console.log(error)
     }
   }
   
@@ -64,16 +59,13 @@ const App = () => {
         const signer = provider.getSigner()
         const bankContract = new ethers.Contract(contractAddress, contractABI, signer)
         const txn = await bankContract.setBankName(utils.formatBytes32String(inputValue.bankName))
-        console.log('Setting bank name...')
         await txn.wait()
-        console.log('Bank name changed', txn.hash)
         getBankName()
       } else {
-        console.log('Ethereum object not found, install Metamask.')
+
         setError('Please install a MetaMask wallet to use our bank.')
       }
     } catch (error) {
-      console.log(error)
     }
   }
 
@@ -87,16 +79,13 @@ const App = () => {
          setBankOwnerAddress(owner)
 
          const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' })
-
          if (owner.toLowerCase() === account.toLowerCase()) {
            setIsBankOwner(true)
          }
       } else {
-        console.log('Ethereum object not found, install MetaMask!')
         setError('Please install a MataMask wallet to use our bank!')
       }
     } catch (error) {
-      console.log(error)
     }
   }
 
@@ -109,13 +98,10 @@ const App = () => {
 
         let balance = await bankContract.getCustomerBalance()
         setCustomerTotalBalance(utils.formatEther(balance))
-        console.log('Retrieved balance', balance)
       } else {
-        console.log('Ethereum object not found, install MetaMask!')
         setError('Please install a MetaMask wallet to use our bank!')
       }
     } catch (error) {
-      console.log(error)
     }
   }
 
@@ -131,19 +117,14 @@ const App = () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = provider.getSigner()
         const bankContract = new ethers.Contract(contractAddress, contractABI, signer)
-
         const txn = await bankContract.depositMoney({ value: ethers.utils.parseEther(inputValue.deposit) })
-        console.log('Depositing money...')
         await txn.wait()
-        console.log('Deposited money... done', txn.hash)
 
         customerBalanceHandler()
       } else {
-        console.log('Ethereum object not found, install MetaMask.')
         setError('Please install a MetaMask wallet to use our bank.')
       }
     } catch (error) {
-      console.log(error)
     }
   }
 
@@ -157,25 +138,20 @@ const App = () => {
         const bankContract = new ethers.Contract(contractAddress, contractABI, signer)
 
         let myAddress = await signer.getAddress()
-        console.log('Provider signer...', myAddress)
 
         const txn = await bankContract.withdrawMoney(myAddress, ethers.utils.parseEther(inputValue.withdraw))
-        console.log('Withdrawing money...')
         await txn.wait()
-        console.log('Money withdrew... done', txn.hash)
 
         customerBalanceHandler()
       } else {
-        console.log('Ethereum object not found, install MetaMask.')
         setError('Please install a MetaMask wallet to use our bank!')
       }
     } catch (error) {
-      console.log(error)
     }
   }
 
   useEffect(() => {
-    
+    checkIfWalletIsConnected()
     getBankName()
     getBankOwnerHandler()
     customerBalanceHandler()
@@ -193,9 +169,20 @@ const App = () => {
         
         {error && <Toast message={error} clearToast={clearError} />}
 
+        <div>
+          {currentBankName === '' && isBankOwner ?
+          <p>Setup the name of your bank!</p> : <p>{currentBankName}</p>
+          }
+        </div>
 
         <InputField type='text' label='Deposit ETH' name='deposit' value={inputValue.deposit} onChange={handleInputChange} buttonText='Deposit' onSubmit={depositMoneyHandler} />
         <InputField type='text' label='Withdraw ETH' name='withdraw' value={inputValue.withdraw} onChange={handleInputChange} buttonText='Withraw' onSubmit={withdrawMoneyHandler} />
+
+        <Text label='Customer Balance' content={customerTotalBalance} />
+        <Text label='Bank Owner Address' content={bankOwnerAddress} />
+
+        {isWalletConnected && <Text label='Your wallet address' content={customerAddress} />}
+
       </main>
     </ThemeProvider>
   )

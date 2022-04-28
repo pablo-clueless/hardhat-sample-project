@@ -59,9 +59,9 @@ export const theme = createTheme({
     },
     palette: {
         text: {
-            primary: '#071B85',
-            secondary: '#757575',
-            alternate: '#000000',
+            primary: '#ff57a3',
+            secondary: '#8171f4',
+            alternate: '#474544',
             error: '#F02525'
         }
     }
