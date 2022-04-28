@@ -18,6 +18,7 @@
 }
 
 body {
+  background: var(--light);
   font-family: var(--base-font);
   padding: 0 0.5rem;
 }
@@ -33,4 +34,9 @@ h4, h5, h6 {
 
 a {
   text-decoration: none;
+}
+
+.bank-name {
+  text-align: center;
+  color: var(--base-color);
 }

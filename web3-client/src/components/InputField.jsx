@@ -31,13 +31,13 @@ const useStyles = makeStyles(theme =>createStyles({
   }
 }))
 
-const InputField = ({ type, label, name, value, onChange, onSubmit, buttonText }) => {
+const InputField = ({ type, label, name, value, onChange, placeholder, onSubmit, buttonText }) => {
   const classes = useStyles()
 
   return (
     <div className={classes.formControl}>
       <form onSubmit={onSubmit} className={classes.form}>
-        <TextField fullWidth type={type} label={label} name={name} value={value} onChange={onChange} placeholder='0.0000 ETH' size='small' classes={{ root: classes.root }} />
+        <TextField fullWidth type={type} label={label} name={name} value={value} onChange={onChange} placeholder={placeholder} size='small' classes={{ root: classes.root }} />
         <Button variant='contained' type='submit'>
           {buttonText}
         </Button>
