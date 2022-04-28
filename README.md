@@ -1,6 +1,6 @@
 # Hardhat Sample Project
 
-![React](https://img.shields.io/badge/react-npm%20-blue?style=for-the-badge&logo=react)
+![React](https://img.shields.io/badge/react-%20-blue?style=for-the-badge&logo=react)
 
 ![Ethereum](https://img.shields.io/badge/etherjs-%20-black?style=for-the-badge&logo=ethereum)
 
