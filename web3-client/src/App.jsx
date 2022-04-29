@@ -39,6 +39,8 @@ const App = () => {
         setError('Please install a MetaMask wallet to use our bank.')
       }
     } catch (error) {
+      setError(error.message)
+      // console.log(error)
     }
   }
 
@@ -56,6 +58,8 @@ const App = () => {
         setError('Please install a MetaMask wallet to use our bank')
       }
     } catch (error) {
+      setError(error.message)
+      // console.log(error)
     }
   }
   
@@ -75,10 +79,11 @@ const App = () => {
         setInputValue(prevFormData => ({ ...prevFormData, bankName: '' }))
         getBankName()
       } else {
-
         setError('Please install a MetaMask wallet to use our bank.')
       }
     } catch (error) {
+      setError(error.message)
+      // console.log(error)
     }
   }
 
@@ -99,6 +104,8 @@ const App = () => {
         setError('Please install a MataMask wallet to use our bank!')
       }
     } catch (error) {
+      setError(error.message)
+      // console.log(error)
     }
   }
 
@@ -115,6 +122,8 @@ const App = () => {
         setError('Please install a MetaMask wallet to use our bank!')
       }
     } catch (error) {
+      setError(error.message)
+      // console.log(error)
     }
   }
 
@@ -130,6 +139,7 @@ const App = () => {
       }
     } catch (error) {
       setError(error.message)
+      // console.log(error)
     }
   }
 
@@ -160,6 +170,7 @@ const App = () => {
       }
     } catch (error) {
       setError(error.message)
+      // console.log(error)
     }
   }
 
@@ -187,6 +198,7 @@ const App = () => {
       }
     } catch (error) {
       setError(error.mssage)
+      // console.log(error)
     }
   }
 
