@@ -164,7 +164,7 @@ const App = () => {
 
         setDepositing(false)
         setInputValue(prevFormData => ({ ...prevFormData, deposit: '' }))
-        customerBalanceHandler()
+        customerBalance()
       } else {
         setError('Please install a MetaMask wallet to use our bank.')
       }
@@ -192,7 +192,7 @@ const App = () => {
 
         setWithdrawing(false)
         setInputValue(prevFormData => ({ ...prevFormData, withdraw: '' }))
-        customerBalanceHandler()
+        customerBalance()
       } else {
         setError("Please install a MetaMask wallet to use our bank.")
       }
