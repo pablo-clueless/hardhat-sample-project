@@ -14,6 +14,7 @@ const App = () => {
   const [customerTotalBalance, setCustomerTotalBalance] = useState(null)
   const [currentBankName, setCurrentBankName] = useState(null)
   const [customerAddress, setCustomerAddress] = useState(null)
+  const [bankBalance, setBankBalance] = useState(null)
   const [error, setError] = useState(null)
 
   // states for transaction toasts
@@ -58,7 +59,7 @@ const App = () => {
     }
   }
   
-  const setBankNameHandler = async (e) => {
+  const setBankName = async (e) => {
     e.preventDefault()
 
     try {
@@ -81,7 +82,7 @@ const App = () => {
     }
   }
 
-  const getBankOwnerHandler = async () => {
+  const getBankOwner = async () => {
     try {
       if(window.ethereum) {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -101,7 +102,7 @@ const App = () => {
     }
   }
 
-  const customerBalanceHandler = async () => {
+  const customerBalance = async () => {
     try {
       if(window.ethereum) {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -114,6 +115,21 @@ const App = () => {
         setError('Please install a MetaMask wallet to use our bank!')
       }
     } catch (error) {
+    }
+  }
+
+  const getBankBalance = async () => {
+    try {
+      if(window.ethereum) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const signer = provider.getSigner()
+        const bankContract = new ethers.Contract(contractAddress, contractABI, signer)
+
+        const bankBalance = await bankContract.getBankBalance()
+        setBankBalance(utils.formatEther(bankBalance))
+      }
+    } catch (error) {
+      setError(error.message)
     }
   }
 
@@ -143,6 +159,7 @@ const App = () => {
         setError('Please install a MetaMask wallet to use our bank.')
       }
     } catch (error) {
+      setError(error.message)
     }
   }
 
@@ -169,15 +186,16 @@ const App = () => {
         setError("Please install a MetaMask wallet to use our bank.")
       }
     } catch (error) {
-      console.log(error)
+      setError(error.mssage)
     }
   }
 
   useEffect(() => {
     checkIfWalletIsConnected()
     getBankName()
-    getBankOwnerHandler()
-    customerBalanceHandler()
+    getBankOwner()
+    customerBalance()
+    getBankBalance()
   },[isWalletConnected])
 
   const clearError = () => setError(null)
@@ -188,7 +206,7 @@ const App = () => {
       <main>
         {error && <Toast message={error} clearToast={clearError} />}
         {depositing && <Toast message='Depositing funds.' isToast />}
-        {withdrawing && <Toast message='Witdrawing funds.' isToast />}
+        {withdrawing && <Toast message='Withdrawing funds.' isToast />}
         {settingBankName && <Toast message='Setting bank name' isToast />}
 
         <div className='bank-name'>
@@ -197,7 +215,7 @@ const App = () => {
           }
         </div>
 
-        {/* <h4 className=''>Shared Wallet Balance: {}</h4> */}
+        <h4 className='bank-balance'>Bank Balance: {bankBalance} ETH</h4>
 
         <InputField type='text' label='Deposit ETH' name='deposit' value={inputValue.deposit} onChange={handleInputChange} buttonText='Deposit' onSubmit={depositMoneyHandler} placeholder='0.00 ETH' />
         
@@ -208,7 +226,7 @@ const App = () => {
 
         {isWalletConnected && <Text label='Your wallet address' content={customerAddress} />}
 
-        {isBankOwner && <InputField type='text' label='Bank Name' name='bankName' value={bankName} onChange={handleInputChange} buttonText='Set Bank Name' onSubmit={setBankNameHandler} placeholder='Set Bank Name' />}
+        {isBankOwner && <InputField type='text' label='Bank Name' name='bankName' value={bankName} onChange={handleInputChange} buttonText='Set Bank Name' onSubmit={setBankName} placeholder='Set Bank Name' />}
       </main>
     </ThemeProvider>
   )

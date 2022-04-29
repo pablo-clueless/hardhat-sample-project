@@ -4,7 +4,7 @@ import { makeStyles, createStyles } from '@mui/styles'
 
 const useStyles = makeStyles(theme =>createStyles({
   formControl: {
-    margin: '1rem 2rem',
+    margin: '0 2rem',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'

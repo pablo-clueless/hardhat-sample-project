@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@200;300&family=Radio+Canada:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@100;200;300&family=Radio+Canada:wght@500&display=swap');
 
 :root {
   --base-font: 'Prompt', sans-serif;
@@ -39,4 +39,11 @@ a {
 .bank-name {
   text-align: center;
   color: var(--base-color);
+}
+
+.bank-balance {
+  text-align: center;
+  color: var(--alt-color);
+  margin: 1rem 0;
+  font-weight: 100;
 }

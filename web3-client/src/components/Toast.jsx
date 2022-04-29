@@ -9,19 +9,20 @@ const useStyles = makeStyles({
         // height: '100vh',
         position: 'absolute',
         top: 90,
-        left: '40%',
+        left: '30%',
         display: 'grid',
         placeItems: 'center',
         // backgroundColor: 'rgba(0, 0, 0, 0.6)',
         zIndex: 2,
     },
     toast: {
-        width: '20vw',
+        width: '40vw',
         display: 'grid',
         placeItems: 'center',
         textAlign: 'center',
+        wordBreak: 'break-word',
         backgroundColor: 'var(--light)',
-        padding: '1rem 0',
+        padding: '1rem 0.5rem',
         border: '1px solid var(--dark)',
         borderRadius: '5px',
         transition: '0.5s ease',
@@ -45,7 +46,7 @@ const Toast = ({ message, clearToast, isToast }) => {
     <div className={classes.toastContainer} ref={toastRef}>
         <div className={classes.toast}>
             <Typography variant='body2' color='error'>
-                {message}
+                {message.substring(0, 74)}
             </Typography>
             {!isToast ?
             <Button variant='text' onClick={clearToast}>

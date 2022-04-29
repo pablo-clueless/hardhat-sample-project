@@ -25,10 +25,10 @@ contract Bank {
     }
 
     function withdrawMoney(address payable _to, uint256 _total) public {
-        // require(
-        //     _total >= customerBalance[msg.sender],
-        //     "You have insuffient funds to withdraw"
-        // );
+        require(
+            customerBalance[msg.sender] >= _total,
+            "You have insuffient funds to withdraw"
+        );
 
         customerBalance[msg.sender] -= _total;
         _to.transfer(_total);
