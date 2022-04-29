@@ -9,14 +9,20 @@ import { theme } from './theme'
 const App = () => {
   const [isWalletConnected, setIsWalletConnected] = useState(false)
   const [isBankOwner, setIsBankOwner] = useState(false)
-  const [inputValue, setInputValue] = useState({ withdraw: '', deposit: '', bankName: ''})
-  const [transacting, setTransacting] = useState({ depositing: false, withdrawing: false })
+  const [inputValue, setInputValue] = useState({ withdraw: '', deposit: '', bankName: '' })
   const [bankOwnerAddress, setBankOwnerAddress] = useState(null)
   const [customerTotalBalance, setCustomerTotalBalance] = useState(null)
   const [currentBankName, setCurrentBankName] = useState(null)
   const [customerAddress, setCustomerAddress] = useState(null)
   const [error, setError] = useState(null)
-  const [showModal, setShowModal] = useState(false)
+
+  // states for transaction toasts
+  const [depositing, setDepositing] = useState(false)
+  const [withdrawing, setWithdrawing] = useState(false)
+  const [settingBankName, setSettingBankName] = useState(false)
+
+  //destructure inputValue
+  const { bankName, deposit, withdraw } = inputValue
 
   const contractAddress =  import.meta.env.VITE_CONTRACT_ADDRESS
   const contractABI = abi.abi
@@ -60,11 +66,13 @@ const App = () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = provider.getSigner()
         const bankContract = new ethers.Contract(contractAddress, contractABI, signer)
-        const txn = await bankContract.setBankName(utils.formatBytes32String(inputValue.bankName))
+        const txn = await bankContract.setBankName(utils.formatBytes32String(bankName))
+        setSettingBankName(true)
         await txn.wait()
 
+        setSettingBankName(false)
+        setInputValue(prevFormData => ({ ...prevFormData, bankName: '' }))
         getBankName()
-        setInputValue(prevFormData => ({ ...prevFormData, [e.target.name]: ''}))
       } else {
 
         setError('Please install a MetaMask wallet to use our bank.')
@@ -115,7 +123,7 @@ const App = () => {
   }
 
   const depositMoneyHandler = async (e) => {
-    if(!inputValue.deposit) return alert('Please enter a valid value!')
+    if(!deposit) return alert('Please enter a valid value!')
 
     try {
       e.preventDefault()
@@ -124,11 +132,13 @@ const App = () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = provider.getSigner()
         const bankContract = new ethers.Contract(contractAddress, contractABI, signer)
-        const txn = await bankContract.depositMoney({ value: ethers.utils.parseEther(inputValue.deposit) })
+        const txn = await bankContract.depositMoney({ value: ethers.utils.parseEther(deposit) })
+        setDepositing(true)
         await txn.wait()
 
+        setDepositing(false)
+        setInputValue(prevFormData => ({ ...prevFormData, deposit: '' }))
         customerBalanceHandler()
-        setInputValue(prevFormData => ({ ...prevFormData, [e.target.name]: '' }))
       } else {
         setError('Please install a MetaMask wallet to use our bank.')
       }
@@ -137,48 +147,49 @@ const App = () => {
   }
 
   const withdrawMoneyHandler = async (e) => {
-    if(!inputValue.withdraw) return alert('Please enter a valid value!')
+    if(!withdraw) return alert('Please enter a valid value!')
 
     try {
-      e.preventDefault()
-
-      if(window.ethereum) {
+      e.preventDefault();
+      if (window.ethereum) {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = provider.getSigner()
         const bankContract = new ethers.Contract(contractAddress, contractABI, signer)
 
         let myAddress = await signer.getAddress()
-        console.log('provider signer...', myAddress)
 
-        const txn = await bankContract.withdrawMoney(myAddress, ethers.utils.parseEther(inputValue.withdraw))
-        console.log('withdrawing')
+        const txn = await bankContract.withdrawMoney(myAddress, ethers.utils.parseEther(withdraw))
+        setWithdrawing(true)
         await txn.wait()
 
+        setWithdrawing(false)
+        setInputValue(prevFormData => ({ ...prevFormData, withdraw: '' }))
         customerBalanceHandler()
-        setInputValue(prevFormData => ({ ...prevFormData, [e.target.name]: ''}))
       } else {
-        setError('Please install a MetaMask wallet to use our bank!')
+        setError("Please install a MetaMask wallet to use our bank.")
       }
     } catch (error) {
+      console.log(error)
     }
   }
 
   useEffect(() => {
+    checkIfWalletIsConnected()
     getBankName()
     getBankOwnerHandler()
     customerBalanceHandler()
   },[isWalletConnected])
 
   const clearError = () => setError(null)
-  
-  const setModalState = () => setShowModal(!showModal)
 
   return (
     <ThemeProvider theme={theme}>
-    <Navbar isWalletConnected={isWalletConnected} connectWallet={checkIfWalletIsConnected} />
+    <Navbar isWalletConnected={isWalletConnected} />
       <main>
         {error && <Toast message={error} clearToast={clearError} />}
-        {transacting.depositing && showModal && <Toast message='Depositing your funds.' clearToast={setModalState} />}
+        {depositing && <Toast message='Depositing funds.' isToast />}
+        {withdrawing && <Toast message='Witdrawing funds.' isToast />}
+        {settingBankName && <Toast message='Setting bank name' isToast />}
 
         <div className='bank-name'>
           {currentBankName === '' && isBankOwner ?
@@ -197,7 +208,7 @@ const App = () => {
 
         {isWalletConnected && <Text label='Your wallet address' content={customerAddress} />}
 
-        {isBankOwner && <InputField type='text' label='Bank Name' name='bankName' value={inputValue.bankName} onChange={handleInputChange} buttonText='Set Bank Name' onSubmit={setBankNameHandler} placeholder='Set Bank Name' />}
+        {isBankOwner && <InputField type='text' label='Bank Name' name='bankName' value={bankName} onChange={handleInputChange} buttonText='Set Bank Name' onSubmit={setBankNameHandler} placeholder='Set Bank Name' />}
       </main>
     </ThemeProvider>
   )

@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Button, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import { gsap } from 'gsap'
 
 const useStyles = makeStyles({
     toastContainer: {
@@ -31,18 +32,25 @@ const useStyles = makeStyles({
     }
 })
 
-const Toast = ({ message, clearToast }) => {
+const Toast = ({ message, clearToast, isToast }) => {
     const classes = useStyles()
 
+    const toastRef = useRef()
+
+    useEffect(() => {
+        gsap.to(toastRef.current, { y: -20 })
+    })
+
   return (
-    <div className={classes.toastContainer}>
+    <div className={classes.toastContainer} ref={toastRef}>
         <div className={classes.toast}>
             <Typography variant='body2' color='error'>
                 {message}
             </Typography>
+            {!isToast ?
             <Button variant='text' onClick={clearToast}>
                 Close
-            </Button>
+            </Button> : null }
         </div>
     </div>
   )

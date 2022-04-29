@@ -18,7 +18,7 @@ const useStyles = makeStyles({
     }
 })
 
-const Navbar = ({ connectWallet, isWalletConnected }) => {
+const Navbar = ({ isWalletConnected }) => {
     const classes = useStyles()
 
   return (
@@ -27,7 +27,7 @@ const Navbar = ({ connectWallet, isWalletConnected }) => {
            <Typography variant='body1' marginLeft={2}>
                 Bank dApp 💰
             </Typography>
-            <Button variant={isWalletConnected ? 'outlined' : 'text'} onClick={connectWallet}>
+            <Button variant={isWalletConnected ? 'outlined' : 'text'}>
                 {isWalletConnected ? 'Wallet Connected 🔒' : 'Connect Wallet 🔑'}
             </Button>
        </Toolbar>

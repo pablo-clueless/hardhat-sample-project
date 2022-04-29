@@ -28,7 +28,7 @@ export const theme = createTheme({
                     textTransform: 'capitalize',
                     borderColor: 'var(--success)',
                     '&:hover': {
-                        transform: 'translateY(-5px)',
+                        // transform: 'translateY(-5px)',
                         backgroundColor: 'var(--success)',
                         color: 'var(--light)',
                         borderColor: 'var(--success)'
@@ -45,7 +45,7 @@ export const theme = createTheme({
                     borderColor: 'var(--error)',                    
                     marginTop: '0.5rem',
                     '&:hover': {
-                        transform: 'translateY(-5px)',
+                        // transform: 'translateY(-5px)',
                         backgroundColor: 'var(--error)',
                         color: 'var(--light)',
                         borderColor: 'var(--error)',
