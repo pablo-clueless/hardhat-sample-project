@@ -39,7 +39,7 @@ const App = () => {
         setError('Please install a MetaMask wallet to use our bank.')
       }
     } catch (error) {
-      setError(error.message)
+      // setError(error.message)
       // console.log(error)
     }
   }
@@ -58,7 +58,7 @@ const App = () => {
         setError('Please install a MetaMask wallet to use our bank')
       }
     } catch (error) {
-      setError(error.message)
+      // setError(error.message)
       // console.log(error)
     }
   }
@@ -197,7 +197,7 @@ const App = () => {
         setError("Please install a MetaMask wallet to use our bank.")
       }
     } catch (error) {
-      setError(error.mssage)
+      setError(error.message)
       // console.log(error)
     }
   }
