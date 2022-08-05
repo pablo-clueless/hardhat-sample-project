@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@100;200;300&family=Radio+Canada:wght@500&display=swap');
+
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

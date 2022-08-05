@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { ethers, utils } from 'ethers'
-import { ThemeProvider } from '@mui/material'
 
+import { InputField, Navbar, Toast } from './components'
 import abi from './contracts/Bank.json'
-import { InputField, Navbar, Text, Toast } from './components'
-import { theme } from './theme'
+
+const initialState = {withdraw: '',deposit: '',bankName: ''}
 
 const App = () => {
   const [isWalletConnected, setIsWalletConnected] = useState(false)
   const [isBankOwner, setIsBankOwner] = useState(false)
-  const [inputValue, setInputValue] = useState({ withdraw: '', deposit: '', bankName: '' })
+  const [inputValue, setInputValue] = useState(initialState)
   const [bankOwnerAddress, setBankOwnerAddress] = useState(null)
   const [customerTotalBalance, setCustomerTotalBalance] = useState(null)
   const [currentBankName, setCurrentBankName] = useState(null)
@@ -39,8 +39,7 @@ const App = () => {
         setError('Please install a MetaMask wallet to use our bank.')
       }
     } catch (error) {
-      // setError(error.message)
-      // console.log(error)
+      setError(error.message)
     }
   }
 
@@ -50,7 +49,7 @@ const App = () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signer = provider.getSigner()
         const bankContract = new ethers.Contract(contractAddress, contractABI, signer)
-
+        
         let bankName = await bankContract.bankName()
         bankName = utils.parseBytes32String(bankName)
         setCurrentBankName(bankName.toString())
@@ -58,8 +57,7 @@ const App = () => {
         setError('Please install a MetaMask wallet to use our bank')
       }
     } catch (error) {
-      // setError(error.message)
-      // console.log(error)
+      setError(error.message)
     }
   }
   
@@ -83,7 +81,6 @@ const App = () => {
       }
     } catch (error) {
       setError(error.message)
-      // console.log(error)
     }
   }
 
@@ -105,7 +102,6 @@ const App = () => {
       }
     } catch (error) {
       setError(error.message)
-      // console.log(error)
     }
   }
 
@@ -138,17 +134,15 @@ const App = () => {
       }
     } catch (error) {
       setError(error.message)
-      // console.log(error)
     }
   }
 
   const handleInputChange = (e) => {
-
     setInputValue(prevFormData => ({ ...prevFormData, [e.target.name]: e.target.value }))
   }
 
   const depositMoneyHandler = async (e) => {
-    if(!deposit) return alert('Please enter a valid value!')
+    if(!deposit || !deposit < 0) return alert('Please enter a valid value!')
 
     try {
       e.preventDefault()
@@ -168,8 +162,8 @@ const App = () => {
         setError('Please install a MetaMask wallet to use our bank.')
       }
     } catch (error) {
+      console.log(error)
       setError(error.message)
-      // console.log(error)
     }
   }
 
@@ -197,7 +191,6 @@ const App = () => {
       }
     } catch (error) {
       setError(error.message)
-      // console.log(error)
     }
   }
 
@@ -212,34 +205,67 @@ const App = () => {
   const clearError = () => setError(null)
 
   return (
-    <ThemeProvider theme={theme}>
-    <Navbar isWalletConnected={isWalletConnected} />
-      <main>
-        {error && <Toast message={error} clearToast={clearError} />}
-        {depositing && <Toast message='Depositing funds.' isToast />}
-        {withdrawing && <Toast message='Withdrawing funds.' isToast />}
-        {settingBankName && <Toast message='Setting bank name' isToast />}
+    <div className=''>
+      <div className='w-screen bg-white overflow-x-hidden'>
+        {error && <Toast type='error' message={error} onClear={clearError} />}
+        {depositing && <Toast message='Depositing funds.' />}
+        {withdrawing && <Toast message='Withdrawing funds.' />}
+        {settingBankName && <Toast message='Setting bank name' />}
+        <Navbar isWalletConnected={isWalletConnected} />
+        <main className='w-full grid place-items-center'>
 
-        <div className='bank-name'>
-          {currentBankName === '' && isBankOwner ?
-          <h4>Setup the name of your bank!</h4> : <h1>{currentBankName}</h1>
-          }
-        </div>
+          <div className='text-center text-xl font-semibold text-primary mt-4 mb-8'>
+            {!currentBankName === ' ' && isBankOwner ?
+            ( <h4>Setup the name of your bank!</h4>) : 
+            (<h1>{currentBankName}</h1>)}
+          </div>
 
-        <h4 className='bank-balance'>Bank Balance: {bankBalance} ETH</h4>
+          <h4 className='text-2xl'>Bank Balance: {bankBalance} ETH</h4>
 
-        <InputField type='text' label='Deposit ETH' name='deposit' value={inputValue.deposit} onChange={handleInputChange} buttonText='Deposit' onSubmit={depositMoneyHandler} placeholder='0.00 ETH' />
-        
-        <InputField type='text' label='Withdraw ETH' name='withdraw' value={inputValue.withdraw} onChange={handleInputChange} buttonText='Withraw' onSubmit={withdrawMoneyHandler} placeholder='0.00 ETH' />
+          <form onSubmit={depositMoneyHandler} className='w-250 md:w-500 grid place-items-center gap-1 mt-4 mb-8'>
+            <InputField type='text' label='Deposit ETH' name='deposit' value={inputValue.deposit} onChange={handleInputChange} placeholder='0.00 ETH' />
+            <button type='submit' disabled={!inputValue.deposit} className='px-4 py-1 bg-secondary text-white border-1 hover:bg-white hover:border-secondary hover:text-secondary hover:-translate-y-1 transition-all duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed'>
+              Deposit
+            </button>
+          </form>
+          
+          <form onSubmit={withdrawMoneyHandler} className='w-250 md:w-500 grid place-items-center gap-1 mt-4 mb-8'>
+            <InputField type='text' label='Withdraw ETH' name='withdraw' value={inputValue.withdraw} onChange={handleInputChange} placeholder='0.00 ETH' />
+            <button type='submit' disabled={!inputValue.withdraw} className='px-4 py-1 bg-secondary text-white border-1 hover:bg-white hover:border-secondary hover:text-secondary hover:-translate-y-1 transition-all duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed'>
+              Withdraw
+            </button>
+          </form>
 
-        <Text label='Customer Balance' content={customerTotalBalance} />
-        <Text label='Bank Owner Address' content={bankOwnerAddress} />
+          <p className='flex flex-col items-center gap-1 text-secondary my-2'>
+            Your Balance:
+            <span className='text-xs sm:text-base md:text-xl font-semibold text-primary'>
+              {customerTotalBalance}
+            </span>
+          </p>
+          {isWalletConnected && <p className='flex flex-col items-center gap-1 text-secondary my-2'>
+            Your Address:
+            <span className='text-xs sm:text-base md:text-xl font-semibold text-primary'>
+              {customerAddress}
+            </span>
+            </p>}
+          <p className='flex flex-col items-center gap-1 text-secondary my-2'>
+            Owner Address:
+            <span className='text-xs sm:text-base md:text-xl font-semibold text-primary'>
+              {bankOwnerAddress}
+            </span>
+          </p>
 
-        {isWalletConnected && <Text label='Your wallet address' content={customerAddress} />}
 
-        {isBankOwner && <InputField type='text' label='Bank Name' name='bankName' value={bankName} onChange={handleInputChange} buttonText='Set Bank Name' onSubmit={setBankName} placeholder='Set Bank Name' />}
-      </main>
-    </ThemeProvider>
+          {isBankOwner && 
+          <form onSubmit={setBankName} className='w-250 md:w-500 grid place-items-center gap-1 mt-4 mb-8'>
+            <InputField type='text' label='Bank Name' name='bankName' value={bankName} onChange={handleInputChange} placeholder='Set Bank Name' />
+            <button type='submit' disabled={!inputValue.bankName} className='px-4 py-1 bg-secondary text-white border-1 hover:bg-white hover:border-secondary hover:text-secondary hover:-translate-y-1 transition-all duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed'>
+              Set Bank Name
+            </button>
+          </form>}
+        </main>
+      </div>
+    </div>
   )
 }
 
